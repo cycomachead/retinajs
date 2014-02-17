@@ -1,6 +1,6 @@
-# retina.js
+# retina.js [![Build Status](https://secure.travis-ci.org/imulus/retinajs.png?branch=master)](http://travis-ci.org/imulus/retinajs)
 
-### JavaScript and LESS helpers for rendering high-resolution image variants
+### JavaScript, LESS and SASS helpers for rendering high-resolution image variants
 
 retina.js makes it easy to serve high-resolution images to devices with retina displays
 
@@ -15,24 +15,22 @@ The script assumes you use Apple's prescribed high-resolution modifier (@2x) to 
 For example, if you have an image on your page that looks like this:
 
 ```html
-    <img src="/images/my_image.png" />
+<img src="/images/my_image.png" />
 ```
 
-The script will check your server to see if an alternative image exists at this path:
-
-    "/images/my_image@2x.png"
+The script will check your server to see if an alternative image exists at `/images/my_image@2x.png`
 
 However, if you have:
 
 ```html
-    <img src="/images/my_image.png" data-at2x="http://example.com/my_image@2x.png" />
+<img src="/images/my_image.png" data-at2x="http://example.com/my_image@2x.png" />
 ```
 
 The script will use `http://example.com/my_image@2x.png` as the high-resolution image. No checks to the server will be performed.
 
-##How to use
+## How to use
 
-###JavaScript
+### JavaScript
 
 The JavaScript helper script automatically replaces images on your page with high-resolution variants (if they exist). To use it, download the script and include it at the bottom of your page.
 
@@ -43,9 +41,9 @@ The JavaScript helper script automatically replaces images on your page with hig
 <script type="text/javascript" src="/scripts/retina.js"></script>
 ```
 
-###LESS
+###LESS & SASS
 
-The LESS CSS mixin is a helper for applying high-resolution background images in your stylesheet. You provide it with an image path and the dimensions of the original-resolution image. The mixin creates a media query specifically for Retina displays, changes the background image for the selector elements to use the high-resolution (@2x) variant and applies a background-size of the original image in order to maintain proper dimensions. To use it, download the mixin, import or include it in your LESS stylesheet, and apply it to elements of your choice.
+The LESS & SASS CSS mixins are helpers for applying high-resolution background images in your stylesheet. You provide it with an image path and the dimensions of the original-resolution image. The mixin creates a media query specifically for Retina displays, changes the background image for the selector elements to use the high-resolution (@2x) variant and applies a background-size of the original image in order to maintain proper dimensions. To use it, download the mixin, import or include it in your LESS or SASS stylesheet, and apply it to elements of your choice. The SASS versions require you pass the extension separately from the path.
 
 *Syntax:*
 
@@ -53,10 +51,16 @@ The LESS CSS mixin is a helper for applying high-resolution background images in
 .at2x(@path, [optional] @width: auto, [optional] @height: auto);
 ```
 
+``` scss
+@include at2x($path, [option] $ext: "jpg", [optional] $width: auto, [optional] $height: auto);
+```
+
 *Steps:*
 
-1. Add the .at2x() mixin from retina.less to your LESS stylesheet (or reference it in an @import statement)
-2. In your stylesheet, call the .at2x() mixin anywhere instead of using background-image
+1. LESS - Add the .at2x() mixin from retina.less to your LESS stylesheet (or reference it in an @import statement)
+SASS - Add the @mixin at2x() from retina.scss or retina.sass to your SASS stylesheet (or reference it in an @import)
+2. LESS - In your stylesheet, call the .at2x() mixin anywhere instead of using background-image
+SASS - In your stylesheet, call @include at2x() anywhere instead of using background-image
 
 This:
 
@@ -66,9 +70,15 @@ This:
 }
 ```
 
+``` sass
+.logo {
+  @include at2x('/images/my_image', png, 200px, 100px);
+}
+```
+
 Will compile to:
 
-``` less
+``` css
 .logo {
   background-image: url('/images/my_image.png');
 }
@@ -92,26 +102,26 @@ There's no way for retina.js to know beforehand what the high-resolution image's
 In Rails, one way to automate this is using a helper, e.g.:
 
 ```ruby
-    # in app/helpers/some_helper.rb or app/helpers/application_helper.rb
-    def image_tag_with_at2x(name_at_1x, options={})
-      name_at_2x = name_at_1x.gsub(%r{\.\w+$}, '@2x\0')
-      image_tag(name_at_1x, options.merge("data-at2x" => asset_path(name_at_2x)))
-    end
+# in app/helpers/some_helper.rb or app/helpers/application_helper.rb
+def image_tag_with_at2x(name_at_1x, options={})
+  name_at_2x = name_at_1x.gsub(%r{\.\w+$}, '@2x\0')
+  image_tag(name_at_1x, options.merge("data-at2x" => asset_path(name_at_2x)))
+end
 ```
 
 And then in your views (templates), instead of using image_tag, you would use image_tag_with_at2x, e.g. for ERB:
 
 ```erb
-  <%= image_tag_with_at2x "logo.png" %>
+<%= image_tag_with_at2x "logo.png" %>
 ```
 
 It would generate something like:
 
 ```html
-  <img src="logo-{hash1}.png" data-at2x="logo@2x-{hash2}.png" />
+<img src="logo-{hash1}.png" data-at2x="logo@2x-{hash2}.png" />
 ```
 
-##How to test
+## How to test
 
 We use [mocha](http://visionmedia.github.com/mocha/) for unit testing with [should](https://github.com/visionmedia/should.js) assertions. Install mocha and should by running `npm install`.
 
@@ -134,18 +144,3 @@ $ cd test/functional && http-server
 Then navigate your browser to [http://localhost:8080](http://localhost:8080)
 
 After that, open up `test/functional/public/index.html` in your editor, and try commenting out the line that spoofs retina support, and reloading it.
-
-
-#License
-
-(MIT License)
-
-Copyright (C) 2012 [Imulus](http://imulus.com)
-
-Copyright (C) 2012 Ben Atkin
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -1,10 +1,11 @@
 {
   "name": "retina.js",
-  "version": "0.0.2",
+  "version": "1.2.0",
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "less": "*"
+    "less": "*",
+    "node-sass": "*"
   },
   "main": "./src/retina",
   "scripts": {
